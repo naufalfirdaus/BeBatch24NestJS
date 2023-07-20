@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import {
+  IPaginationOptions,
+  Pagination,
+  paginate,
+} from 'nestjs-typeorm-paginate';
 import { Regions } from 'output/entities/Regions';
 import { Repository } from 'typeorm';
+import { RoomI } from './region.interface';
 
 @Injectable()
 export class RegionsService {
@@ -9,12 +15,11 @@ export class RegionsService {
     @InjectRepository(Regions) private serviceReg: Repository<Regions>,
   ) {}
 
-  public async findAll() {
-    return await this.serviceReg.find({
-      relations: {
-        countries: true,
-      },
-    });
+  public async findAll(
+    options: IPaginationOptions,
+  ): Promise<Pagination<RoomI>> {
+    const region = await this.serviceReg.createQueryBuilder('regions');
+    return paginate(region, options);
   }
   public async findOne(ids: number) {
     return await this.serviceReg.findOne({ where: { regionId: ids } });

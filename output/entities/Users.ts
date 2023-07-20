@@ -6,22 +6,19 @@ export class Users {
   @PrimaryGeneratedColumn({ type: "integer", name: "user_id" })
   userId: number;
 
-  @Column("character varying", { name: "username", nullable: true, length: 50 })
-  username: string | null;
-
   @Column("character varying", {
-    name: "first_name",
+    name: "user_name",
     nullable: true,
     length: 50,
   })
-  firstName: string | null;
+  userName: string | null;
 
   @Column("character varying", {
-    name: "last_name",
+    name: "user_phone",
     nullable: true,
-    length: 50,
+    length: 15,
   })
-  lastName: string | null;
+  userPhone: string | null;
 
   @Column("character varying", {
     name: "user_email",
@@ -31,16 +28,9 @@ export class Users {
   userEmail: string | null;
 
   @Column("character varying", {
-    name: "user_phone",
+    name: "user_pass",
     nullable: true,
-    length: 13,
+    length: 250,
   })
-  userPhone: string | null;
-
-  @Column("character varying", {
-    name: "user_password",
-    nullable: true,
-    length: 100,
-  })
-  userPassword: string | null;
+  userPass: string | null;
 }

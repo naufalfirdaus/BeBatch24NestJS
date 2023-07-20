@@ -18,14 +18,12 @@ export class UserService {
     try {
       const hashPassword = await Bcrypt.hash(fields.password, salt);
       const user = await this.userRepo.save({
-        username: fields.username,
-        firstName: fields.firstName,
-        lastName: fields.lastName,
+        userName: fields.username,
         userEmail: fields.email,
         userPhone: fields.phone,
-        userPassword: hashPassword,
+        userPass: hashPassword,
       });
-      const { userPassword, ...result } = user;
+      const { userPass, ...result } = user;
       return result;
     } catch (error) {
       return error.message;
@@ -34,23 +32,21 @@ export class UserService {
 
   public async validateUser(name: string, password: string) {
     const user = await this.userRepo.findOne({
-      where: [{ username: name }, { userEmail: name }],
+      where: [{ userName: name }, { userEmail: name }],
     });
-    const compare = await Bcrypt.compare(password, user.userPassword);
+    const compare = await Bcrypt.compare(password, user.userPass);
     if (compare) {
-      const { userPassword, ...result } = user;
+      const { userPass, ...result } = user;
       return result;
     }
   }
 
   public async login(user: any) {
     const payload = {
-      username: user.username,
+      username: user.userName,
       id: user.userId,
       phone: user.userPhone,
       email: user.userEmail,
-      firstName: user.firstName,
-      lastName: user.lastName,
     };
     return {
       access_token: this.jwtService.sign(payload),

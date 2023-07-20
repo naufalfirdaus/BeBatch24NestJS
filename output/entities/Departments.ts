@@ -6,33 +6,33 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { Locations } from "./Locations";
-import { Employees } from "./Employees";
-import { JobHistory } from "./JobHistory";
+} from 'typeorm';
+import { Locations } from './Locations';
+import { Employees } from './Employees';
+import { JobHistory } from './JobHistory';
 
-@Index("departments_pkey", ["departmentId"], { unique: true })
-@Entity("departments", { schema: "public" })
+@Index('departments_pkey', ['departmentId'], { unique: true })
+@Entity('departments', { schema: 'public' })
 export class Departments {
-  @PrimaryGeneratedColumn({ type: "integer", name: "department_id" })
+  @PrimaryGeneratedColumn({ type: 'integer', name: 'department_id' })
   departmentId: number;
 
-  @Column("character varying", {
-    name: "department_name",
+  @Column('character varying', {
+    name: 'department_name',
     nullable: true,
     length: 20,
   })
   departmentName: string | null;
 
   @ManyToOne(() => Locations, (locations) => locations.departments, {
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
-  @JoinColumn([{ name: "location_id", referencedColumnName: "locationId" }])
+  @JoinColumn([{ name: 'location_id', referencedColumnName: 'locationId' }])
   location: Locations;
 
   @ManyToOne(() => Employees, (employees) => employees.departments)
-  @JoinColumn([{ name: "manager_id", referencedColumnName: "employeeId" }])
+  @JoinColumn([{ name: 'manager_id', referencedColumnName: 'employeeId' }])
   manager: Employees;
 
   @OneToMany(() => Employees, (employees) => employees.department)

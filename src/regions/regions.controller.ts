@@ -3,22 +3,30 @@ import {
   Controller,
   Delete,
   Get,
+  Header,
   Param,
   Post,
   Put,
+  Res,
+  StreamableFile,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { RegionsService } from './regions.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { createReadStream } from 'fs';
+import { join } from 'path';
 
 @Controller('regions')
 export class RegionsController {
   constructor(private Services: RegionsService) {}
 
-  @Get()
-  public async getAll() {
-    return this.Services.findAll();
+  @Post('paging')
+  public async getAll(@Body() fields: any) {
+    return this.Services.findAll({
+      page: fields.page || 1,
+      limit: fields.limit || 5,
+    });
   }
   @Get(':ids')
   public async getOne(@Param('ids') ids: number) {
@@ -40,5 +48,12 @@ export class RegionsController {
   @UseInterceptors(FileInterceptor('file'))
   public async Upload(@UploadedFile() file, @Body('name') name: string) {
     return this.Services.Upload(file, name);
+  }
+  @Get('photo/:name')
+  @Header('Content-Type', `image/${'png' || 'jpg' || 'jpeg'}`)
+  @Header('Content-Disposition', 'attachment')
+  getStaticFile(@Param('name') name: string): StreamableFile {
+    const file = createReadStream(join(`${process.cwd()}/uploads/`, name));
+    return new StreamableFile(file);
   }
 }
