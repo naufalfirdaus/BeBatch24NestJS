@@ -1,12 +1,16 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Header,
   Param,
+  ParseFloatPipe,
+  ParseIntPipe,
   Post,
   Put,
+  Query,
   Res,
   StreamableFile,
   UploadedFile,
@@ -21,11 +25,15 @@ import { join } from 'path';
 export class RegionsController {
   constructor(private Services: RegionsService) {}
 
-  @Post('paging')
-  public async getAll(@Body() fields: any) {
-    return this.Services.findAll({
-      page: fields.page || 1,
-      limit: fields.limit || 5,
+  @Get('paging')
+  public async getAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(3), ParseIntPipe) limit: number,
+    @Query('search', new DefaultValuePipe(null)) search: string,
+  ) {
+    return this.Services.findAll(search, {
+      page: page,
+      limit: limit,
     });
   }
   @Get(':ids')

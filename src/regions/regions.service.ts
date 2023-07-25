@@ -16,10 +16,20 @@ export class RegionsService {
   ) {}
 
   public async findAll(
+    search: string,
     options: IPaginationOptions,
   ): Promise<Pagination<RoomI>> {
-    const region = await this.serviceReg.createQueryBuilder('regions');
-    return paginate(region, options);
+    if (!search) {
+      const region = await this.serviceReg.createQueryBuilder('regions');
+      return paginate(region, options);
+    } else {
+      const region = await this.serviceReg
+        .createQueryBuilder('regions')
+        .where('region_name like "%:search%" or photo like "%:search%"', {
+          search,
+        });
+      return paginate(region, options);
+    }
   }
   public async findOne(ids: number) {
     return await this.serviceReg.findOne({ where: { regionId: ids } });
@@ -34,6 +44,7 @@ export class RegionsService {
       return error.message;
     }
   }
+
   public async update(id: number, name: string) {
     try {
       const region = await this.serviceReg.update(id, {
