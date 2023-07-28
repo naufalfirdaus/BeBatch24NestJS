@@ -15,20 +15,36 @@ export class RegionsService {
   public async findAll(search: string, options: PaginationDto) {
     const skippedItems = (options.page - 1) * options.limit;
     const totalCount = await this.serviceReg.count();
-    const regions = await this.serviceReg
-      .createQueryBuilder()
-      .orderBy('region_name', 'ASC')
-      .offset(skippedItems)
-      .limit(options.limit)
-      .where("region_name like '%' || :search || '%'", { search })
-      .getMany();
+    if (search) {
+      const regions = await this.serviceReg
+        .createQueryBuilder()
+        .orderBy('region_name', 'ASC')
+        .offset(skippedItems)
+        .limit(options.limit)
+        .where("region_name like '%' || :search || '%'", { search })
+        .getMany();
 
-    return {
-      totalCount,
-      page: options.page,
-      limit: options.limit,
-      data: regions,
-    };
+      return {
+        totalCount,
+        page: options.page,
+        limit: options.limit,
+        data: regions,
+      };
+    } else {
+      const regions = await this.serviceReg
+        .createQueryBuilder()
+        .orderBy('region_name', 'ASC')
+        .offset(skippedItems)
+        .limit(options.limit)
+        .getMany();
+
+      return {
+        totalCount,
+        page: options.page,
+        limit: options.limit,
+        data: regions,
+      };
+    }
   }
   public async findOne(search: string) {
     try {
