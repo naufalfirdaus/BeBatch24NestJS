@@ -36,9 +36,11 @@ export class RegionsController {
       limit: limit,
     });
   }
-  @Get(':ids')
-  public async getOne(@Param('ids') ids: number) {
-    return this.Services.findOne(ids);
+  @Get('search')
+  public async getOne(
+    @Query('search', new DefaultValuePipe(null)) search: string,
+  ) {
+    return this.Services.findOne(search);
   }
   @Post()
   public async Create(@Body('name') name: string) {
