@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Regions } from 'output/entities/Regions';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { RoomI } from './region.interface';
 import { PaginationDto } from './pagionation.dto';
 
@@ -12,18 +12,20 @@ export class RegionsService {
     @InjectRepository(Regions) private serviceReg: Repository<Regions>,
   ) {}
 
-  public async findAll(search: string, options: PaginationDto) {
+  public async findAll(search: string, options: PaginationDto): Promise<RoomI> {
     const skippedItems = (options.page - 1) * options.limit;
     const totalCount = await this.serviceReg.count();
     if (search) {
-      const regions = await this.serviceReg
-        .createQueryBuilder()
-        .orderBy('region_name', 'ASC')
-        .offset(skippedItems)
-        .limit(options.limit)
-        .where("region_name like '%' || :search || '%'", { search })
-        .getMany();
-
+      const regions = await this.serviceReg.find({
+        relations: { countries: true },
+        take: options.limit,
+        skip: skippedItems,
+        where: {
+          countries: {
+            countryName: Like(`%${search}%`),
+          },
+        },
+      });
       return {
         totalCount,
         page: options.page,
@@ -31,12 +33,11 @@ export class RegionsService {
         data: regions,
       };
     } else {
-      const regions = await this.serviceReg
-        .createQueryBuilder()
-        .orderBy('region_name', 'ASC')
-        .offset(skippedItems)
-        .limit(options.limit)
-        .getMany();
+      const regions = await this.serviceReg.find({
+        relations: { countries: true },
+        take: options.limit,
+        skip: skippedItems,
+      });
 
       return {
         totalCount,

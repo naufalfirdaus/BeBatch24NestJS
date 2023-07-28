@@ -1,8 +1,8 @@
-import { Countries } from 'output/entities/Countries';
+import { Regions } from 'output/entities/Regions';
 
 export class RoomI {
-  regionId?: number;
-  regionName?: string;
-  photo?: string;
-  countries?: Countries[];
+  data: Regions[];
+  page: number;
+  limit: number;
+  totalCount: number;
 }
