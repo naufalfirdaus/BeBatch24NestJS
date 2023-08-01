@@ -17,12 +17,15 @@ export class RegionsService {
     const totalCount = await this.serviceReg.count();
     if (search) {
       const regions = await this.serviceReg.find({
-        relations: { countries: true },
+        relations: { countries: { locations: true } },
         take: options.limit,
         skip: skippedItems,
         where: {
           countries: {
-            countryName: Like(`%${search}%`),
+            // countryName: Like(`%${search}%`),
+            locations: {
+              city: Like(`%${search}%`),
+            },
           },
         },
       });
@@ -34,7 +37,7 @@ export class RegionsService {
       };
     } else {
       const regions = await this.serviceReg.find({
-        relations: { countries: true },
+        relations: { countries: { locations: true } },
         take: options.limit,
         skip: skippedItems,
       });
