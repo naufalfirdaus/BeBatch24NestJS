@@ -29,9 +29,10 @@ export class RegionsController {
   public async getAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(3), ParseIntPipe) limit: number,
-    @Query('search', new DefaultValuePipe(null)) search: string,
+    @Query('location', new DefaultValuePipe('')) location: string,
+    @Query('city', new DefaultValuePipe('')) city: string,
   ) {
-    return this.Services.findAll(search, {
+    return this.Services.findAll(location, city, {
       page: page,
       limit: limit,
     });

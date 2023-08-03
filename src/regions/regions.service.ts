@@ -12,43 +12,32 @@ export class RegionsService {
     @InjectRepository(Regions) private serviceReg: Repository<Regions>,
   ) {}
 
-  public async findAll(search: string, options: PaginationDto): Promise<RoomI> {
+  public async findAll(
+    location: string,
+    city: string,
+    options: PaginationDto,
+  ): Promise<RoomI> {
     const skippedItems = (options.page - 1) * options.limit;
     const totalCount = await this.serviceReg.count();
-    if (search) {
-      const regions = await this.serviceReg.find({
-        relations: { countries: { locations: true } },
-        take: options.limit,
-        skip: skippedItems,
-        where: {
-          countries: {
-            // countryName: Like(`%${search}%`),
-            locations: {
-              city: Like(`%${search}%`),
-            },
+    const regions = await this.serviceReg.find({
+      relations: { countries: { locations: true } },
+      take: options.limit,
+      skip: skippedItems,
+      where: {
+        countries: {
+          locations: {
+            city: Like(`%${location}%`),
           },
+          countryName: Like(`%${city}%`),
         },
-      });
-      return {
-        totalCount,
-        page: options.page,
-        limit: options.limit,
-        data: regions,
-      };
-    } else {
-      const regions = await this.serviceReg.find({
-        relations: { countries: { locations: true } },
-        take: options.limit,
-        skip: skippedItems,
-      });
-
-      return {
-        totalCount,
-        page: options.page,
-        limit: options.limit,
-        data: regions,
-      };
-    }
+      },
+    });
+    return {
+      totalCount,
+      page: options.page,
+      limit: options.limit,
+      data: regions,
+    };
   }
   public async findOne(search: string) {
     try {
@@ -77,9 +66,12 @@ export class RegionsService {
 
   public async update(id: number, name: string) {
     try {
-      const region = await this.serviceReg.update(id, {
-        regionName: name,
-      });
+      const region = await this.serviceReg.update(
+        { regionId: id, regionName: name },
+        {
+          regionName: name,
+        },
+      );
       return region;
     } catch (error) {
       return error.message;
