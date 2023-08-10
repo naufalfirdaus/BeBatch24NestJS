@@ -20,7 +20,23 @@ export class RegionsService {
     const skippedItems = (options.page - 1) * options.limit;
     const totalCount = await this.serviceReg.count();
     const regions = await this.serviceReg.find({
-      relations: { countries: { locations: true } },
+      select: {
+        regionId: true,
+        regionName: true,
+        photo: true,
+        countries: {
+          countryId: true,
+          countryName: true,
+          locations: {
+            city: true,
+          },
+        },
+      },
+      relations: {
+        countries: {
+          locations: true,
+        },
+      },
       take: options.limit,
       skip: skippedItems,
       where: {
@@ -32,6 +48,7 @@ export class RegionsService {
         },
       },
     });
+    console.log();
     return {
       totalCount,
       page: options.page,
